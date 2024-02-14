@@ -1,6 +1,9 @@
-import javax.swing.*;
-import java.awt.*;
-import java.util.Vector;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+
+import javax.swing.JPanel;
 
 public class GamePanel extends JPanel implements Runnable {
     //SCREEN SETTINGS
@@ -14,30 +17,12 @@ public class GamePanel extends JPanel implements Runnable {
     public final int SCREEN_HEIGHT = tileSize * maxScreenRow; // 576 pixels
 
     // FPS
-
     int FPS = 16; // 16 milliseconds = 60 FPS
 
-    //BALL
-    int ballWidth = 32;
-    int ballHeight = 32;
-
-    int ballX = SCREEN_WIDTH/2 - ballWidth/2;
-    int ballY = SCREEN_HEIGHT/2 - ballHeight/2;
-
-    int ballSpeedX = 4;
-    int ballSpeedY = 4;
-
-    //PLAYERS
-    int paddleWidth = 16;
-    int paddleHeight= 64;
-
-    int playerOnePaddleX = 16;
-    int playerOnePaddleY = 20;
-
-    int playerTwoPaddleX = SCREEN_WIDTH - 32;
-    int playerTwoPaddleY = 40;
-
-    int paddleSpeed = 5;
+    // DISK
+    int diskSpeed = 5;
+    int diskPositionY;
+    int diskSize = 40;
 
     // SYSTEM
     KeyHandler keyH = new KeyHandler();
@@ -46,7 +31,7 @@ public class GamePanel extends JPanel implements Runnable {
 
     public GamePanel() {
         this.setPreferredSize(new Dimension(SCREEN_WIDTH, SCREEN_HEIGHT));
-        this.setBackground(Color.black);
+        this.setBackground(Color.white);
         this.setDoubleBuffered(true);
         this.addKeyListener(keyH);
         this.setFocusable(true);
@@ -74,107 +59,20 @@ public class GamePanel extends JPanel implements Runnable {
     }
 
     public void update() {
-        paddleControl();
-        paddleCollision();
-        ballSimulation();
+        
     }
 
 
-    private void ballSimulation() {
-        ballX += ballSpeedX;
-        ballY += ballSpeedY;
 
-        if (ballX < 0) {
-            ballX = 0;
-            ballSpeedX = -ballSpeedX;
-        } else if (ballX + ballWidth > SCREEN_WIDTH) {
-            ballX = SCREEN_WIDTH - ballWidth;
-            ballSpeedX = -ballSpeedX;
-        }
-
-        if (ballY < 0) {
-            ballY = 0;
-            ballSpeedY = -ballSpeedY;
-        } else if (ballY + ballHeight > SCREEN_HEIGHT) {
-            ballY = SCREEN_HEIGHT - ballHeight;
-            ballSpeedY = -ballSpeedY;
-        }
-
-    }
-
-    private void paddleCollision() {
-
-        //PLAYER ONE
-        if (playerOnePaddleY <= 0) {
-            playerOnePaddleY = 0;
-        }
-        if (playerOnePaddleY >= SCREEN_HEIGHT - paddleHeight) {
-            playerOnePaddleY = SCREEN_HEIGHT - paddleHeight;
-        }
-
-        //PLAYER TWO
-        if (playerTwoPaddleY <= 0) {
-            playerTwoPaddleY = 0;
-        }
-        if (playerTwoPaddleY >= SCREEN_HEIGHT - paddleHeight) {
-            playerTwoPaddleY = SCREEN_HEIGHT - paddleHeight;
-        }
-
-    }
-
-
-    private void paddleControl() {
-
-        //PLAYER ONE
-        if (keyH.upPressedOne) {
-            playerOnePaddleY -= paddleSpeed;
-        }
-        if (keyH.downPressedOne) {
-            playerOnePaddleY += paddleSpeed;
-        }
-
-        //PLAYER TWO
-        if (keyH.upPressedTwo) {
-            playerTwoPaddleY -= paddleSpeed;
-        }
-        if (keyH.downPressedTwo) {
-            playerTwoPaddleY += paddleSpeed;
-        }
-
-    }
 
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
         Graphics2D g2D = (Graphics2D) g;
-        g2D.setColor(Color.WHITE);
-        paddleDrawing(g2D);
-        boardDrawing(g2D);
-        ballDrawing(g2D);
+        g2D.setColor(Color.RED);
+        g2D.fillOval(0, 0, 100, 100);
         g2D.dispose();
     }
 
-    private void ballDrawing(Graphics2D g2D) {
-        g2D.fillOval(ballX, ballY, ballWidth, ballHeight);
-    }
 
 
-    private void boardDrawing(Graphics2D g2D) {
-
-        g2D.drawOval(SCREEN_WIDTH/2 - 128, SCREEN_HEIGHT/2 -128, 256, 256);
-
-        for (int i = 4; i < SCREEN_HEIGHT; i += 16) {
-            g2D.fillRect(SCREEN_WIDTH/2, i, 4, 8);
-        }
-
-    }
-
-    private void paddleDrawing(Graphics2D g2D) {
-
-        //PLAYER ONE
-        g2D.fillRect(playerOnePaddleX, playerOnePaddleY, paddleWidth, paddleHeight);
-
-        //PLAYER TWO
-        g2D.fillRect(playerTwoPaddleX, playerTwoPaddleY, paddleWidth, paddleHeight);
-
-    }
 }
